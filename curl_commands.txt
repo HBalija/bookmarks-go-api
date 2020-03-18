@@ -10,4 +10,14 @@ curl http://localhost:8000/bookmarks/<id>/
 
 CREATE NEW BOOMARK:
 
-curl -X POST http://localhost:8000/bookmarks/  -H "Content-Type: application/json" -d '{"title":<title>, "url":<url>}'
+curl -X POST http://localhost:8000/bookmarks/  -H "Content-Type: application/json" -d '{"title":<title:string>, "url":<url:string>}'
+
+
+REMOVE BOOKMARK BY ID:
+
+curl -X DELETE http://localhost:8000/bookmarks/<id>/
+
+
+UPDATE BOOKMARK:
+
+curl -X PUT http://localhost:8000/bookmarks/  -H "Content-Type: application/json" -d '{"id": <id:int>, "title":<title:string>, "url":<url:string>}'
