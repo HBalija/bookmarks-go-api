@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bookmarks/models"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -9,24 +10,16 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// MODEL
-
-type bookmark struct {
-	ID    int    `json:"id"`
-	Title string `json:"title"`
-	URL   string `json:"url"`
-}
-
-var bs []bookmark
+var bs []models.Bookmark
 
 func main() {
 
 	// add static data
-	bs = append(bs, bookmark{ID: 1, Title: "Golang", URL: "https://golang.org/"},
-		bookmark{ID: 2, Title: "Python", URL: "https://www.python.org/"},
-		bookmark{ID: 3, Title: "DRF", URL: "https://www.django-rest-framework.org/"},
-		bookmark{ID: 4, Title: "Angular", URL: "https://angular.io/"},
-		bookmark{ID: 5, Title: "React", URL: "https://reactjs.org/"},
+	bs = append(bs, models.Bookmark{ID: 1, Title: "Golang", URL: "https://golang.org/"},
+		models.Bookmark{ID: 2, Title: "Python", URL: "https://www.python.org/"},
+		models.Bookmark{ID: 3, Title: "DRF", URL: "https://www.django-rest-framework.org/"},
+		models.Bookmark{ID: 4, Title: "Angular", URL: "https://angular.io/"},
+		models.Bookmark{ID: 5, Title: "React", URL: "https://reactjs.org/"},
 	)
 
 	// initialize router
@@ -50,7 +43,7 @@ func getBookmarks(w http.ResponseWriter, r *http.Request) {
 }
 
 func addBookmark(w http.ResponseWriter, r *http.Request) {
-	var b bookmark
+	var b models.Bookmark
 	// decode pointer response body into "b" memory address
 	json.NewDecoder(r.Body).Decode(&b)
 	bs = append(bs, b)
@@ -73,7 +66,7 @@ func getBookmark(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateBookmark(w http.ResponseWriter, r *http.Request) {
-	var b bookmark
+	var b models.Bookmark
 	json.NewDecoder(r.Body).Decode(&b)
 
 	for i, v := range bs {
