@@ -1,4 +1,4 @@
-# Bookmarks GO rest api
+# Simple Bookmarks GO rest api
 
 ### Work in progress
 

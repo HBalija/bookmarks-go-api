@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -18,6 +20,14 @@ type bookmark struct {
 var bs []bookmark
 
 func main() {
+
+	// add static data
+	bs = append(bs, bookmark{ID: 1, Title: "Golang", URL: "https://golang.org/"},
+		bookmark{ID: 2, Title: "Python", URL: "https://www.python.org/"},
+		bookmark{ID: 3, Title: "DRF", URL: "https://www.django-rest-framework.org/"},
+		bookmark{ID: 4, Title: "Angular", URL: "https://angular.io/"},
+		bookmark{ID: 5, Title: "React", URL: "https://reactjs.org/"},
+	)
 
 	// initialize router
 	r := mux.NewRouter()
@@ -35,16 +45,23 @@ func main() {
 
 // HANDLERS
 
-func getBookmarks(http.ResponseWriter, *http.Request) {
-	log.Println("Get all bookmarks")
+func getBookmarks(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(bs)
 }
 
 func addBookmark(http.ResponseWriter, *http.Request) {
 	log.Println("Add new bookmark")
 }
 
-func getBookmark(http.ResponseWriter, *http.Request) {
-	log.Println("Get one bookmark")
+func getBookmark(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	id, _ := strconv.Atoi(params["id"]) // Ascii to int
+
+	for _, v := range bs {
+		if v.ID == id {
+			json.NewEncoder(w).Encode(v)
+		}
+	}
 }
 
 func updateBookmark(http.ResponseWriter, *http.Request) {
