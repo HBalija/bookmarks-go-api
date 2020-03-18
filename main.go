@@ -49,8 +49,15 @@ func getBookmarks(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(bs)
 }
 
-func addBookmark(http.ResponseWriter, *http.Request) {
-	log.Println("Add new bookmark")
+func addBookmark(w http.ResponseWriter, r *http.Request) {
+	var b bookmark
+	// decode pointer response body into "b" memory address
+	json.NewDecoder(r.Body).Decode(&b)
+
+	bs = append(bs, b)
+
+	// return response (201)
+	json.NewEncoder(w).Encode(http.StatusCreated)
 }
 
 func getBookmark(w http.ResponseWriter, r *http.Request) {
@@ -59,6 +66,7 @@ func getBookmark(w http.ResponseWriter, r *http.Request) {
 
 	for _, v := range bs {
 		if v.ID == id {
+			// return response
 			json.NewEncoder(w).Encode(v)
 		}
 	}

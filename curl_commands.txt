@@ -1,0 +1,13 @@
+GET ALL BOOKMARKS:
+
+curl http://localhost:8000/bookmarks/
+
+
+GET BOOKMARK BY ID:
+
+curl http://localhost:8000/bookmarks/<id>/
+
+
+CREATE NEW BOOMARK:
+
+curl -X POST http://localhost:8000/bookmarks/  -H "Content-Type: application/json" -d '{"title":<title>, "url":<url>}'
