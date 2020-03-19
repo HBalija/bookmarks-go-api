@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"bookmarks/models"
 
@@ -14,8 +15,7 @@ import (
 	"github.com/subosito/gotenv"
 )
 
-var bs []models.Bookmark // empty slice
-var db *sql.DB           // db --> a pointer to global sql.DB type
+var db *sql.DB // db --> a pointer to global sql.DB type
 
 func init() {
 	gotenv.Load() // load env variables from ".env" file
@@ -55,43 +55,55 @@ func main() {
 // HANDLERS
 
 func getBookmarks(w http.ResponseWriter, r *http.Request) {
-	var bookmark models.Bookmark
-	rows, err := db.Query("select * from bookmarks")
+	var b models.Bookmark
+	var bs []models.Bookmark // empty slice
+
+	rows, err := db.Query("SELECT * FROM bookmarks")
 	logFatal(err)
 
 	defer rows.Close() // close connection after function is executed
 
+	log.Println(rows)
+
 	for rows.Next() { // returns boolean
-		err := rows.Scan(&bookmark.ID, &bookmark.Title, &bookmark.URL)
+		err := rows.Scan(&b.ID, &b.Title, &b.URL)
 		logFatal(err)
 
-		bs = append(bs, bookmark)
+		bs = append(bs, b)
 	}
 
 	json.NewEncoder(w).Encode(bs)
 }
 
 func addBookmark(w http.ResponseWriter, r *http.Request) {
-	// var b models.Bookmark
-	// // decode pointer response body into "b" memory address
-	// json.NewDecoder(r.Body).Decode(&b)
-	// bs = append(bs, b)
+	var b models.Bookmark
 
-	// // return status 201
-	// json.NewEncoder(w).Encode(http.StatusCreated)
+	// decode request body and map value to "b" variable address
+	json.NewDecoder(r.Body).Decode(&b)
+
+	err := db.QueryRow(
+		"INSERT INTO bookmarks (title, url) VALUES($1, $2) RETURNING id",
+		b.Title, b.URL).Scan(&b.ID) // populate "b" objects id with created id
+
+	if err != nil {
+		json.NewEncoder(w).Encode(http.StatusBadRequest)
+	} else {
+		json.NewEncoder(w).Encode("Created: " + strconv.Itoa(b.ID))
+	}
 }
 
 func getBookmark(w http.ResponseWriter, r *http.Request) {
-	// params := mux.Vars(r)
-	// id, _ := strconv.Atoi(params["id"]) // Ascii to int
+	var b models.Bookmark
+	params := mux.Vars(r)
 
-	// for _, v := range bs {
-	// 	if v.ID == id {
-	// 		// return response
-	// 		json.NewEncoder(w).Encode(v)
-	// 		break
-	// 	}
-	// }
+	row := db.QueryRow("select * from bookmarks where id=$1", params["id"])
+	err := row.Scan(&b.ID, &b.Title, &b.URL)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(http.StatusNotFound)
+	} else {
+		json.NewEncoder(w).Encode(b)
+	}
 }
 
 func updateBookmark(w http.ResponseWriter, r *http.Request) {
