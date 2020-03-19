@@ -1,0 +1,11 @@
+Create database and add required user privileges.
+
+From database interactive mode:
+
+create bookmarks table:
+  CREATE TABLE bookmarks (id serial, title varchar, url varchar);
+
+insert records:
+  INSERT INTO bookmarks (title, url) values('Python', 'https://www.python.org/');
+  INSERT INTO bookmarks (title, url) values('Golang', 'https://golang.org/');
+  INSERT INTO bookmarks (title, url) values('React', 'https://reactjs.org/');
