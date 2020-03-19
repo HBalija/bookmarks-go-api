@@ -5,7 +5,6 @@
 
 To do:
 
-    - add modularity to code
     - add error handling
     - add server logging
 
