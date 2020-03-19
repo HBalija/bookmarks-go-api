@@ -63,8 +63,6 @@ func getBookmarks(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close() // close connection after function is executed
 
-	log.Println(rows)
-
 	for rows.Next() { // returns boolean
 		err := rows.Scan(&b.ID, &b.Title, &b.URL)
 		logFatal(err)
@@ -107,29 +105,24 @@ func getBookmark(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateBookmark(w http.ResponseWriter, r *http.Request) {
-	// var b models.Bookmark
-	// json.NewDecoder(r.Body).Decode(&b)
+	var b models.Bookmark
+	json.NewDecoder(r.Body).Decode(&b)
 
-	// for i, v := range bs {
-	// 	if v.ID == b.ID {
-	// 		bs[i] = b
-	// 		// return status 200
-	// 		json.NewEncoder(w).Encode(http.StatusOK)
-	// 		break
-	// 	}
-	// }
+	_, err := db.Exec("UPDATE bookmarks SET title=$1, url=$2 WHERE id=$3",
+		b.Title, b.URL, b.ID)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(http.StatusBadRequest)
+	} else {
+		json.NewEncoder(w).Encode(b)
+	}
 }
 
 func removeBookmark(w http.ResponseWriter, r *http.Request) {
-	// 	params := mux.Vars(r)
-	// 	id, _ := strconv.Atoi(params["id"])
+	params := mux.Vars(r)
 
-	// 	for i, v := range bs {
-	// 		if v.ID == id {
-	// 			bs = append(bs[:i], bs[(i+1):]...) // slice till "i" and add values from "i" to end
-	// 			break
-	// 		}
-	// 	}
-	// 	// return status 204
-	// 	json.NewEncoder(w).Encode(http.StatusNoContent)
+	_, err := db.Exec("DELETE FROM bookmarks WHERE id=$1", params["id"])
+	logFatal(err)
+
+	json.NewEncoder(w).Encode(http.StatusNoContent)
 }

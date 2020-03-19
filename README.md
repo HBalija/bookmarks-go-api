@@ -7,6 +7,7 @@ To do:
 
     - add modularity to code
     - add error handling
+    - add server logging
 
 
 ### Prerequisites:
@@ -26,8 +27,10 @@ Navigate to project directory:
 
     cd bookmarks-go-api
 
-Create `.env` file and setup variables using `env.sample` as reference
+Create `.env` file and setup variables using `env.sample` as reference.
 
 Run server:
 
     make run
+
+Curl commands are listed in `curl_commands.txt`.
